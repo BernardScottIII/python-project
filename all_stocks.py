@@ -1,24 +1,24 @@
 import stock_portfolio as sp
+import get_tickers as tickers
 
-ticker_list = []
-
-with open("NYSE_and_NYSE_MKT_Trading_Units_Daily_File.xls", "r") as input:
-    for line in input:
-        cols = line.split("\t")
-        # print(cols)
-        ticker_list.append(cols[1])
-
-# print(ticker_list)
+ticker_list = tickers.partial_ticker_list
+stock_list = {}
 
 maxAlpha = 0
 maxBeta = 0
 maxAlphaTicker = ""
 maxBetaTicker = ""
 
+# print(ticker_list)
 for ticker in ticker_list:
-    # print(ticker)
-    # print(type(ticker))
-    alpha, beta = sp.compute_alpha_and_beta(ticker)
+    ticker = ticker[:-1]
+    result, analysis, assessment = sp.comp_regression(ticker)
+    if result == 0:
+        stock_list[ticker] = (0,0,0,0)
+        continue
+    alpha, beta = result.params[0], result.params[1]
+    stock_list[ticker] = (alpha, beta, analysis, assessment)
+    print(ticker + ": " + str(stock_list[ticker]))
     if alpha > maxAlpha:
         maxAlpha = alpha
         maxAlphaTicker = ticker
@@ -26,6 +26,7 @@ for ticker in ticker_list:
         maxBeta = beta
         maxBetaTicker = ticker
 
+print(stock_list)   
 print(maxAlpha)
 print(maxBeta)
 print(maxAlphaTicker)

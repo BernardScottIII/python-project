@@ -1,6 +1,5 @@
 import yfinance as yf
 import requests
-import statistics
 
 response = requests.get(
     url = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/avg_interest_rates?filter=record_date:eq:2024-02-29,security_desc:eq:Treasury%20Bills&sort=-record_date"
@@ -25,7 +24,7 @@ def adjust_close(price, dividend, split):
     return adj_price - dividend
 
 def get_return_series(ticker):
-    # print(type(ticker))
+    
     stock = yf.Ticker(ticker).history(period = "5y", interval = "1mo")
 
     stock_return_series = []
@@ -48,13 +47,3 @@ def get_return_series(ticker):
     return stock_return_series
 
 return_sp = get_return_series("^GSPC")
-
-# print(return_sp)
-
-eRM = int(statistics.mean(return_sp))
-
-# print("Mean T-Bill Interest Rate: " + str(interest_rate))
-
-spslope, spintercept = statistics.linear_regression(list(range(0, len(return_sp))), return_sp)
-
-# print("Expected S&P 500 Return Rate: " + str( ( spslope * ( len( gspc_return_series ) + 1 ) + spintercept ) *100 ) )
